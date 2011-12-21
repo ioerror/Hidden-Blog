@@ -75,6 +75,7 @@ disclosure of possible sensisitive information regarding the server.
 Blosxom comes as just one .cgi file written in perl. To get it
 to work with apache you need libapache2-mod-perl2.
 On debian:
+
     apt-get install libapache2-mod-perl2
 
 
