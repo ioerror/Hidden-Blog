@@ -9,19 +9,24 @@ service. By well we mean that it must protect the server and client
 from identity leaks. This is a guide that configures blosxom to run
 in a dynamic mode and later it will be updated to run in a static mode.
 
+##Example Tor Hidden Service blog
+A blog with this configuration is running in the wild and may be viewed as a
+<a href="http://cxoz72fgevhfgitm.onion/">Tor Hidden Service</a> if you have tor
+installed or by <a href="">using tor2web if you do not</a>.
+
 ##Debian suggestions
 
 Install the following package on Debian:
 
-  apt-get install apache2-mpm-worker libapache2-mod-perl2
+     apt-get install apache2-mpm-worker libapache2-mod-perl2
 
 Make the directories for the content:
 
-  cp hs-blog.apache.conf /etc/apache2/sites-available/
-  mkdir -p /var/www/hs-blog/blosxom-entries
-  mkdir -p /var/www/hs-blog/blosxom-static
-  mkdir -p /var/www/hs-blog/blosxom-dynamic
-  cp blosxomandtor.png /var/www/hs-blog/blosxom-static/
+     cp hs-blog.apache.conf /etc/apache2/sites-available/
+     mkdir -p /var/www/hs-blog/blosxom-entries
+     mkdir -p /var/www/hs-blog/blosxom-static
+     mkdir -p /var/www/hs-blog/blosxom-dynamic
+     cp blosxomandtor.png /var/www/hs-blog/blosxom-static/
 
 ##Configuring tor as a hidden service</h3>
 The first step is configuring Hidden Serivice and getting apache up (for a 
@@ -31,39 +36,39 @@ detailed guide on how to configure a hidden service
 Append the hidden service configuration data to your Tor configuation file and
 reload Tor:
 
-  cat configs/hs-torrc >> /etc/tor/torrc
-  /etc/init.d/tor reload
+     cat configs/hs-torrc >> /etc/tor/torrc
+     /etc/init.d/tor reload
 
 Place the Apache2 configuration file into the Apache2 available-sites
 directory:
 
-  mv hs-blog /etc/apache2/sites-available/
+     mv hs-blog /etc/apache2/sites-available/
 
 Enable it:
 
-  a2ensite hs-blog
-  apachectl reload
+     a2ensite hs-blog
+     apachectl reload
 
 ##Setting up Blosxom
 
 Place the src/blosxom.cgi into your /var/www/hs-blog/blosxom-dynamic directory:
 
-  mv src/blosxom.cgi /var/www/hs-blog/blosxom-dynamic/
-  chown root:www-data /var/www/hs-blog/blosxom-dynamic/blosxom.cgi
-  chmod 755 /var/www/hs-blog/blosxom-dynamic/blosxom.cgi
+     mv src/blosxom.cgi /var/www/hs-blog/blosxom-dynamic/
+     chown root:www-data /var/www/hs-blog/blosxom-dynamic/blosxom.cgi
+     chmod 755 /var/www/hs-blog/blosxom-dynamic/blosxom.cgi
 
 Place the images in the document root:
 
-  mv images/blosxomandtor.png /var/www/hs-blog/blosxom-dynamic/
-  mv images/favicon.ico /var/www/hs-blog/blosxom-dynamic/
-  chown root:root /var/www/hs-blog/blosxom-dynamic/blosxomandtor.png
-  chown root:root /var/www/hs-blog/blosxom-dynamic/favicon.ico
-  chmod 755 /var/www/hs-blog/blosxom-dynamic/blosxomandtor.png
-  chmod 755 /var/www/hs-blog/blosxom-dynamic/favicon.ico
+     mv images/blosxomandtor.png /var/www/hs-blog/blosxom-dynamic/
+     mv images/favicon.ico /var/www/hs-blog/blosxom-dynamic/
+     chown root:root /var/www/hs-blog/blosxom-dynamic/blosxomandtor.png
+     chown root:root /var/www/hs-blog/blosxom-dynamic/favicon.ico
+     chmod 755 /var/www/hs-blog/blosxom-dynamic/blosxomandtor.png
+     chmod 755 /var/www/hs-blog/blosxom-dynamic/favicon.ico
 
 It should look like the following on the file system:
 
-  -rwxr-xr-x 1 root www-data  17K Dec 22 00:40 blosxom.cgi
+     -rwxr-xr-x 1 root www-data  17K Dec 22 00:40 blosxom.cgi
 
 This makes all the links relative, so that they will work with .onion urls.
 This also works when using the blog from tor2web. The only issue is when you
@@ -79,13 +84,13 @@ file names end with .txt or blosxom will not discover them.
 
 Check the entire /var/www/hs-blog/ directory into git:
 
-  cd /var/www/hs-blog/
-  git init
-  git commit -a -m 'blog setup'
+     cd /var/www/hs-blog/
+     git init
+     git commit -a -m 'blog setup'
 
 After adding blog entries, add each one to git:
 
-  git commit -a -m 'new blog entry'
+     git commit -a -m 'new blog entry'
 
 ##Future work
 In the future, we believe it would make sense to run Blosxom as <a
