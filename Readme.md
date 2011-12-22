@@ -71,11 +71,10 @@ It should look like the following on the file system:
 
      -rwxr-xr-x 1 root www-data  17K Dec 22 00:40 blosxom.cgi
 
-This makes all the links relative, so that they will work with .onion urls.
-This also works when using the blog from tor2web. The only issue is when you
-try and browse the page from x.tor2web.org/<onion_url>;.  This is not that
-important as &lt;onion_url&gt;.tor2web.org works fine, yet I am looking for a
-workaround.
+If you are running dynamically, I suggest you edit blosxom.cgi and change the
+the $url value to the following:
+
+      $url = "/blosxom.cgi";
 
 ##Editing your first entry:
 Put your blog entries in /var/www/hs-blog/blosxom-entries/ and ensure that the
