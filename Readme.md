@@ -15,6 +15,13 @@ A blog with this configuration is running in the wild and may be viewed as a
 installed or by <a href="https://cxoz72fgevhfgitm.tor2web.org/">using tor2web
 if you do not</a>.
 
+##Beat NAT and disregard fascist SOPA-style censorship at the same time!
+This setup does not require a public IP address for the system running the
+blogging software. It does not require a domain name. Users that have Tor
+running on their system will reach the blog without having to worry about DNS
+censorship or other kinds of <a
+href="https://en.wikipedia.org/wiki/Traffic_analysis">traffic analysis</a>.
+
 ##Debian suggestions
 
 Install the following package on Debian:
