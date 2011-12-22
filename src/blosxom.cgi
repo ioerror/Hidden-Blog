@@ -27,7 +27,7 @@ $datadir = "/var/www/hs-blog/blosxom-entries";
 
 # What's my preferred base URL for this blog (leave blank for automatic)?
 # This should be in /var/www/hs-blog/blosxom-dynamic/blosxom.cgi
-$url = "/blosxom.cgi";
+$url = "/";
 
 # Should I stick only to the datadir for items or travel down the
 # directory hierarchy looking for items?  If so, to what depth?
