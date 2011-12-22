@@ -1,110 +1,93 @@
 #Running a Blog with blosxom as a Tor hidden service
 ##Tor + Blosxom = love
 
-![](https://github.com/hellais/Hidden-Blog/raw/master/blosxomandtor.png)
+![](https://github.com/ioerror/Hidden-Blog/raw/master/blosxomandtor.png)
 
-Blosxom is a very little blogging application. Being so small 
-and simple it can be easily tweaked to work well as a Tor Hidden 
-service. By well I mean that it must protect the server and client 
-from identity leaks.
+Blosxom is a very little blogging application. Being so small
+and simple it can be easily tweaked to work well as a Tor Hidden
+service. By well we mean that it must protect the server and client
+from identity leaks. This is a guide that configures blosxom to run
+in a dynamic mode and later it will be updated to run in a static mode.
 
+##Debian suggestions
+
+Install the following package on Debian:
+
+  apt-get install apache2-mpm-worker libapache2-mod-perl2
+
+Make the directories for the content:
+
+  cp hs-blog.apache.conf /etc/apache2/sites-available/
+  mkdir -p /var/www/hs-blog/blosxom-entries
+  mkdir -p /var/www/hs-blog/blosxom-static
+  mkdir -p /var/www/hs-blog/blosxom-dynamic
+  cp blosxomandtor.png /var/www/hs-blog/blosxom-static/
 
 ##Configuring tor as a hidden service</h3>
 The first step is configuring Hidden Serivice and getting apache up (for a 
 detailed guide on how to configure a hidden service 
 <a href="http://www.torproject.org/docs/tor-hidden-service.html.en">See here</a>)
-I will just give some pointers on how to avoid identity leaks in apache.
 
-You want to disable the default apache error messages, because they contain
-information on your machine. To so so add this to your hidden service 
-virtual host:
+Append the hidden service configuration data to your Tor configuation file and
+reload Tor:
 
+  cat configs/hs-torrc >> /etc/tor/torrc
+  /etc/init.d/tor reload
 
-        ErrorDocument 300 " "
-        ErrorDocument 301 " "
-        ErrorDocument 302 " "
-        ErrorDocument 303 " "
-        ErrorDocument 304 " "
-        ErrorDocument 305 " "
-        ErrorDocument 306 " "
-        ErrorDocument 307 " "
-        
-        ErrorDocument 500 " "
-        ErrorDocument 501 " "
-        ErrorDocument 502 " "
-        ErrorDocument 503 " "
-        ErrorDocument 504 " "
-        ErrorDocument 505 " "
-        ErrorDocument 506 " "
-        ErrorDocument 507 " "
-        ErrorDocument 509 " "
-        ErrorDocument 510 " "
-        
-        ErrorDocument 400 " "
-        ErrorDocument 401 " "
-        ErrorDocument 402 " "
-        ErrorDocument 403 " "
-        ErrorDocument 404 " "
-        ErrorDocument 405 " "
-        ErrorDocument 406 " "
-        ErrorDocument 407 " "
-        ErrorDocument 408 " "
-        ErrorDocument 409 " "
-        ErrorDocument 410 " "
-        ErrorDocument 411 " "
-        ErrorDocument 412 " "
-        ErrorDocument 413 " "
-        ErrorDocument 414 " "
-        ErrorDocument 415 " "
-        ErrorDocument 416 " "
-        ErrorDocument 417 " "
-        ErrorDocument 418 " "
-        ErrorDocument 422 " "
-        ErrorDocument 423 " "
-        ErrorDocument 424 " "
-        ErrorDocument 425 " "
-        ErrorDocument 426 " "
+Place the Apache2 configuration file into the Apache2 available-sites
+directory:
 
-What it does is it replaces the standard apache error messages
-with blank error strings. This avoids browser fingerprinting and
-disclosure of possible sensisitive information regarding the server.
+  mv hs-blog /etc/apache2/sites-available/
+
+Enable it:
+
+  a2ensite hs-blog
+  apachectl reload
+
 ##Setting up Blosxom
 
+Place the src/blosxom.cgi into your /var/www/hs-blog/blosxom-dynamic directory:
 
+  mv src/blosxom.cgi /var/www/hs-blog/blosxom-dynamic/
+  chown root:www-data /var/www/hs-blog/blosxom-dynamic/blosxom.cgi
+  chmod 755 /var/www/hs-blog/blosxom-dynamic/blosxom.cgi
 
-Blosxom comes as just one .cgi file written in perl. To get it
-to work with apache you need libapache2-mod-perl2.
-On debian:
-    apt-get install libapache2-mod-perl2
+Place the images in the document root:
 
+  mv images/blosxomandtor.png /var/www/hs-blog/blosxom-dynamic/
+  mv images/favicon.ico /var/www/hs-blog/blosxom-dynamic/
+  chown root:root /var/www/hs-blog/blosxom-dynamic/blosxomandtor.png
+  chown root:root /var/www/hs-blog/blosxom-dynamic/favicon.ico
+  chmod 755 /var/www/hs-blog/blosxom-dynamic/blosxomandtor.png
+  chmod 755 /var/www/hs-blog/blosxom-dynamic/favicon.ico
 
-Then you need it to recognize .cgi as a cgi-script so you should
-add this to /etc/apache2/apache2.conf
+It should look like the following on the file system:
 
-    AddHandler cgi-script .cgi .pl
+  -rwxr-xr-x 1 root www-data  17K Dec 22 00:40 blosxom.cgi
 
-By default blosxom will not use https on all links and will not work as
-a hidden service.
-Edit your bloxsom.cgi file in the following way:
+This makes all the links relative, so that they will work with .onion urls.
+This also works when using the blog from tor2web. The only issue is when you
+try and browse the page from x.tor2web.org/<onion_url>;.  This is not that
+important as &lt;onion_url&gt;.tor2web.org works fine, yet I am looking for a
+workaround.
 
-    $blog_title = "YOUR BLOG NAME";
-    $blog_description = "BLOG DESCRIPTION";
-    $datadir = "PLACE WERE U WILL STORE YOUR POSTS";
-    $static_dir = "PLACE WERE STATIC RENDERING HAPPENS";
+##Editing your first entry:
+Put your blog entries in /var/www/hs-blog/blosxom-entries/ and ensure that the
+file names end with .txt or blosxom will not discover them.
 
-Be sure to place your static dir and datadir outside of your public accessible directory, and ensure that files inside are not
-writable by others. If an attacker manages to write your blog entries the least he can do is carry on a 
-<a href="http://en.wikipedia.org/wiki/Cross-site_scripting">XSS attack</a>.
+##Tracking changes with git
 
+Check the entire /var/www/hs-blog/ directory into git:
 
+  cd /var/www/hs-blog/
+  git init
+  git commit -a -m 'blog setup'
 
-To make it work with tor make these changes to 
-the blob of html code at the end of the file:
+After adding blog entries, add each one to git:
 
-    $url = "/index.cgi"
-    html foot &lt;p /&gt;&lt;center&gt;&lt;a href="https://www.blosxom.com/"&gt;&lt;img src="/blosxomandtor.png" border="0" /&gt;&lt;/a&gt;&lt;/body&gt;&lt;/html&gt;
+  git commit -a -m 'new blog entry'
 
-
-This makes all the links relative, so that they will work with .onion urls. This also works when using
-the blog from tor2web. The only issue is when you try and browse the page from x.tor2web.org/<onion_url>;.
-This is not that important as &lt;onion_url&gt;.tor2web.org works fine, yet I am looking for a workaround.
+##Future work
+In the future, we believe it would make sense to run Blosxom as <a
+href="http://www.blosxom.com/documentation/users/configure/static.html"> an
+entirely static blog</a>.

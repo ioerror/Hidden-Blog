@@ -1,0 +1,4 @@
+# Please use a standard torrc and add the following two lines:
+#
+HiddenServiceDir /var/lib/tor/blog_hidden_service/
+HiddenServicePort 80 127.0.0.1:8082
