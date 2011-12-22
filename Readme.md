@@ -12,7 +12,8 @@ in a dynamic mode and later it will be updated to run in a static mode.
 ##Example Tor Hidden Service blog
 A blog with this configuration is running in the wild and may be viewed as a
 <a href="http://cxoz72fgevhfgitm.onion/">Tor Hidden Service</a> if you have tor
-installed or by <a href="">using tor2web if you do not</a>.
+installed or by <a href="https://cxoz72fgevhfgitm.tor2web.org/">using tor2web
+if you do not</a>.
 
 ##Debian suggestions
 
