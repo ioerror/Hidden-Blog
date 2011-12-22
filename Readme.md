@@ -1,7 +1,7 @@
 #Running a Blog with blosxom as a Tor hidden service
 ##Tor + Blosxom = love
 
-![](https://github.com/ioerror/Hidden-Blog/raw/master/blosxomandtor.png)
+![](https://github.com/ioerror/Hidden-Blog/raw/master/images/blosxomandtor.png)
 
 Blosxom is a very little blogging application. Being so small
 and simple it can be easily tweaked to work well as a Tor Hidden
