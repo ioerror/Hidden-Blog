@@ -23,7 +23,7 @@ Install the following package on Debian:
 
 Make the directories for the content:
 
-     cp hs-blog.apache.conf /etc/apache2/sites-available/
+     cp hs-blog-dynamic.apache.conf /etc/apache2/sites-available/
      mkdir -p /var/www/hs-blog/blosxom-entries
      mkdir -p /var/www/hs-blog/blosxom-static
      mkdir -p /var/www/hs-blog/blosxom-dynamic
@@ -43,11 +43,11 @@ reload Tor:
 Place the Apache2 configuration file into the Apache2 available-sites
 directory:
 
-     mv hs-blog /etc/apache2/sites-available/
+     mv hs-blog-dynamic.apache.conf /etc/apache2/sites-available/
 
 Enable it:
 
-     a2ensite hs-blog
+     a2ensite hs-blog-dynamic.apache.conf
      apachectl reload
 
 ##Setting up Blosxom
@@ -81,6 +81,30 @@ workaround.
 Put your blog entries in /var/www/hs-blog/blosxom-entries/ and ensure that the
 file names end with .txt or blosxom will not discover them.
 
+##Static rather than dynamic
+The first step to running a static blog is to ensure you have a place to put
+the data. We suggest /var/www/hs-blog/blosxom-static/ as a good place.
+
+     mdkir -p /var/www/hs-blog/blosxom-static/
+     chown root:your-user /var/www/hs-blog/blosxom-static/
+     chmod 775 /var/www/hs-blog/blosxom-static/
+
+Place the images in the static document root:
+
+     mv images/blosxomandtor.png /var/www/hs-blog/blosxom-dynamic/
+     mv images/favicon.ico /var/www/hs-blog/blosxom-dynamic/
+     chown root:root /var/www/hs-blog/blosxom-dynamic/blosxomandtor.png
+     chown root:root /var/www/hs-blog/blosxom-dynamic/favicon.ico
+     chmod 755 /var/www/hs-blog/blosxom-dynamic/blosxomandtor.png
+     chmod 755 /var/www/hs-blog/blosxom-dynamic/favicon.ico
+
+To run Blosxom statically, use the hs-blog-static.apache.conf in place of the
+hs-blog-dynamic.apache.conf configuration file. You will need to edit
+/var/www/hs-blog/blosxom-dynamic/blosxom.cgi to include a password and then you
+need to run:
+
+     /var/www/hs-blog/blosxom-dynamic/blosxom.cgi -password='YOURPASSWORDGOESHERE'
+
 ##Tracking changes with git
 
 Check the entire /var/www/hs-blog/ directory into git:
@@ -93,7 +117,3 @@ After adding blog entries, add each one to git:
 
      git commit -a -m 'new blog entry'
 
-##Future work
-In the future, we believe it would make sense to run Blosxom as <a
-href="http://www.blosxom.com/documentation/users/configure/static.html"> an
-entirely static blog</a>.
